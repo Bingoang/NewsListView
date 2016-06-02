@@ -54,6 +54,11 @@ public class NewsAdapter extends BaseAdapter {
 		}
 		//设置默认图标
 		viewHolder.ivIcon.setImageResource(R.drawable.ic_launcher);
+		//设置tag,即将各图片控件ivIcon与对应的url进行了绑定（防错乱step1）
+		String url=mList.get(position).iconUrl;
+		viewHolder.ivIcon.setTag(url);
+		//调用方法showImageByThread()，并将item对应的图片控件、对应url传进去
+		new ImageLoader().showImageByThread(viewHolder.ivIcon,url);
 		viewHolder.tvTitle.setText(mList.get(position).title);
 		viewHolder.tvContent.setText(mList.get(position).content);
 		//最后返回convertVeiw
