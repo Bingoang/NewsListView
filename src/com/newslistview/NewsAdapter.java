@@ -3,6 +3,7 @@ package com.newslistview;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,25 +53,38 @@ public class NewsAdapter extends BaseAdapter implements OnScrollListener {
 	}
 
 	@Override
-	public View getView(int position, View convertVeiw, ViewGroup parent) {
+	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolder viewHolder = null;
 		// 将mInflater转化成convertVeiw
-		if (convertVeiw == null) {
+		if (convertView == null) {
 			viewHolder = new ViewHolder();
-			convertVeiw = mInflater.inflate(R.layout.item, null);// 第二个参数：父容器，在这里不需要指定父容器
-			viewHolder.ivIcon = (ImageView) convertVeiw.findViewById(R.id.icon);
-			viewHolder.tvTitle = (TextView) convertVeiw
+			convertView = mInflater.inflate(R.layout.item, null);// 第二个参数：父容器，在这里不需要指定父容器
+			viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.icon);
+			viewHolder.tvTitle = (TextView) convertView
 					.findViewById(R.id.title);
-			viewHolder.tvContent = (TextView) convertVeiw
+			viewHolder.tvContent = (TextView) convertView
 					.findViewById(R.id.content);
-			convertVeiw.setTag(viewHolder);
+			convertView.setTag(viewHolder);
 		} else {
-			viewHolder = (ViewHolder) convertVeiw.getTag();
+			viewHolder = (ViewHolder) convertView.getTag();
 		}
+
+		String url = mList.get(position).iconUrl;//此句上移了
+		//如果缓存中已经存在则设置缓存图片
+		Bitmap bitmap = mImageLoader.getBitmapFromCache(url);
+
+		if (bitmap != null) {
+
+		  viewHolder.ivIcon.setImageBitmap(bitmap);
+
+		} else {
 		// 设置默认图标
 		viewHolder.ivIcon.setImageResource(R.drawable.ic_launcher);
+		}
+		
+		
 		// 设置tag,即将各图片控件ivIcon与对应的url进行了绑定（防错乱step1）
-		String url = mList.get(position).iconUrl;
+//		String url = mList.get(position).iconUrl;
 		viewHolder.ivIcon.setTag(url);
 
 		// //方法一：调用方法showImageByThread()，并将item对应的图片控件、对应url传进去
@@ -84,7 +98,7 @@ public class NewsAdapter extends BaseAdapter implements OnScrollListener {
 		viewHolder.tvTitle.setText(mList.get(position).title);
 		viewHolder.tvContent.setText(mList.get(position).content);
 		// 最后返回convertVeiw
-		return convertVeiw;
+		return convertView;
 	}
 
 	class ViewHolder {
